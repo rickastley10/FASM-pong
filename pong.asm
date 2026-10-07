@@ -31,6 +31,13 @@ game_loop:
     cmp al, 'W'                 ; Check if uppercase 'W'
     je .handle_w
 
+
+    cmp al, '1'
+    je .speedUP
+    cmp al, '2'
+    je .speedDOWN
+
+
     cmp al, 's'                 ; Check if lowercase 's'
     je .handle_s
     cmp al, 'S'                 ; Check if uppercase 'S'
@@ -53,6 +60,22 @@ game_loop:
     add [paddle_y], 20          ; Move down
     jmp .render                 ; Jump to render
 
+
+.speedUP:
+
+mov [time1], 0000h;  0003h
+mov [time2], 2710h;  0D40h
+mov [time3], 86h  ;  86h
+
+jmp .render
+
+.speedDOWN:
+
+mov [time1], 0003h;  0000h
+mov [time2], 0D40h;  2710h
+mov [time3], 86h  ;  86h
+
+jmp .render
 
 .checkballpos:
     .again:
@@ -205,9 +228,10 @@ jmp .pass
     loop .draw_ball_row         ; Repeat for all 10 rows
 
     ; === Delay / Frame Rate Timing (CHANGED HERE: 10ms for 100 FPS) ===
-    mov cx, 0000h
-    mov dx, 2710h
-    mov ah, 86h
+
+    mov cx, [time1]
+    mov dx, [time2]
+    mov ah, [time3]
     int 15h
 
     ; Loop forever unless exited
@@ -231,3 +255,8 @@ ball_y dw 100
 
 ball_vx dw 5
 ball_vy dw 5
+
+
+time1 dw 0000h;  0003h
+time2 dw 2710h;  0D40h
+time3 db 86h  ;  86h
